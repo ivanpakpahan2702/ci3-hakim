@@ -27,8 +27,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Hello Alexx</h5>
-
+                            <h5 class="card-title">Hello Alexx from <?php echo isset($title) ? $title : ''; ?></h5>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fas fa-minus"></i>
@@ -85,3 +84,8 @@
 
 <!-- REQUIRED SCRIPTS -->
 <?php $this->load->view('./partials/scripts'); ?>
+
+<!-- Optional Scripts -->
+
+<!-- Bottom of file -->
+<?php $this->load->view('./partials/bottom'); ?>

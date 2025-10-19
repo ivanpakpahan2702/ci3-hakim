@@ -3,7 +3,7 @@
     <a href="<?php echo base_url('assets/AdminLTE-3.2.0/index3.html'); ?>" class="brand-link">
         <img src="<?php echo base_url('assets/AdminLTE-3.2.0/dist/img/AdminLTELogo.png'); ?>" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">MHA</span>
     </a>
 
     <!-- Sidebar -->
@@ -37,7 +37,8 @@
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="<?php echo site_url('admin'); ?>" class="nav-link active">
+                    <a href="<?php echo site_url('admin'); ?>"
+                        class="nav-link <?php echo (isset($title) && $title == 'Dashboard Admin') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
@@ -53,8 +54,7 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?php echo site_url('admin/AdhocPerikanan/data_hakim'); ?>"
-                                        class="nav-link">
+                                    <a href="<?php echo site_url('admin/adhoc/perikanan'); ?>" class="nav-link">
                                         <i class="fas fa-gavel nav-icon"></i>
                                         <p>Data Hakim</p>
                                     </a>

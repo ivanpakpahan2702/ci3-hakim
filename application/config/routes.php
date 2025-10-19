@@ -50,11 +50,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'welcome';
-$route['admin'] = 'admin/index';
+$route['admin'] = 'AdminController/index';
 
 // mapping spesifik dan fallback untuk controller AdhocPerikanan
-$route['admin/ad-hoc/perikanan'] = 'Hakim/AdhocPerikanan/index';
-$route['admin/ad-hoc/perikanan/(:any)'] = 'Hakim/AdhocPerikanan/$1';
+$route['admin/adhoc/perikanan'] = 'Admin/AdhocPerikanan/index';
+$route['admin/adhoc/perikanan/get_data'] = 'Admin/AdhocPerikanan/get_data';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

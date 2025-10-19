@@ -1,0 +1,21 @@
+
+.custom-checkbox {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    margin-bottom: 20px !important;
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+table thead th {
+    vertical-align: middle !important;
+}
+
+table tbody td {
+    vertical-align: middle !important;
+}

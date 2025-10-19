@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Admin extends CI_Controller
+class AdminController extends CI_Controller
 {
 
     /**
@@ -21,6 +21,7 @@ class Admin extends CI_Controller
      */
     public function index()
     {
-        $this->load->view('admin/index');
+        $data = ['title' => 'Dashboard Admin'];
+        $this->load->view('admin/index', $data);
     }
 }

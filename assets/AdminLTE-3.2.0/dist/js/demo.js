@@ -60,8 +60,135 @@
   // Checkboxes
 
   $container.append(
-    '<h5>Customize AdminLTE</h5><hr class="mb-2"/>'
+    '<h5>Kostumisasi Tampilan Dashboard</h5><hr class="mb-2"/>'
   )
+
+  // Tambahkan fungsi untuk load dan save preferensi
+  function savePreference(key, value) {
+    localStorage.setItem('AdminLTE:Pref:' + key, value ? '1' : '0');
+  }
+
+  function loadPreference(key) {
+    return localStorage.getItem('AdminLTE:Pref:' + key) === '1';
+  }
+
+  // Fungsi untuk menyimpan skin preferences
+  function saveSkinPreference(key, value) {
+    localStorage.setItem('AdminLTE:Skin:' + key, value);
+  }
+
+  function loadSkinPreference(key) {
+    return localStorage.getItem('AdminLTE:Skin:' + key);
+  }
+
+  // Terapkan preferensi dan sinkronisasi checkbox saat halaman dimuat
+  $(function () {
+    // List semua preferensi dan elemen checkbox
+    var prefs = [
+      { key: 'dark-mode', selector: 'body', className: 'dark-mode', $checkbox: $dark_mode_checkbox },
+      { key: 'layout-navbar-fixed', selector: 'body', className: 'layout-navbar-fixed', $checkbox: $header_fixed_checkbox },
+      { key: 'sidebar-collapse', selector: 'body', className: 'sidebar-collapse', $checkbox: $sidebar_collapsed_checkbox },
+      { key: 'layout-fixed', selector: 'body', className: 'layout-fixed', $checkbox: $sidebar_fixed_checkbox },
+      { key: 'sidebar-mini', selector: 'body', className: 'sidebar-mini', $checkbox: $sidebar_mini_checkbox },
+      { key: 'sidebar-mini-md', selector: 'body', className: 'sidebar-mini-md', $checkbox: $sidebar_mini_md_checkbox },
+      { key: 'sidebar-mini-xs', selector: 'body', className: 'sidebar-mini-xs', $checkbox: $sidebar_mini_xs_checkbox },
+      { key: 'layout-footer-fixed', selector: 'body', className: 'layout-footer-fixed', $checkbox: $footer_fixed_checkbox },
+      { key: 'text-sm-body', selector: 'body', className: 'text-sm', $checkbox: $text_sm_body_checkbox },
+      { key: 'text-sm-header', selector: '.main-header', className: 'text-sm', $checkbox: $text_sm_header_checkbox },
+      { key: 'text-sm-brand', selector: '.brand-link', className: 'text-sm', $checkbox: $text_sm_brand_checkbox },
+      { key: 'text-sm-sidebar', selector: '.nav-sidebar', className: 'text-sm', $checkbox: $text_sm_sidebar_checkbox },
+      { key: 'text-sm-footer', selector: '.main-footer', className: 'text-sm', $checkbox: $text_sm_footer_checkbox },
+      { key: 'dropdown-legacy', selector: '.main-header', className: 'dropdown-legacy', $checkbox: $dropdown_legacy_offset_checkbox },
+      { key: 'no-border', selector: '.main-header', className: 'border-bottom-0', $checkbox: $no_border_checkbox },
+      { key: 'nav-flat', selector: '.nav-sidebar', className: 'nav-flat', $checkbox: $flat_sidebar_checkbox },
+      { key: 'nav-legacy', selector: '.nav-sidebar', className: 'nav-legacy', $checkbox: $legacy_sidebar_checkbox },
+      { key: 'nav-compact', selector: '.nav-sidebar', className: 'nav-compact', $checkbox: $compact_sidebar_checkbox },
+      { key: 'nav-child-indent', selector: '.nav-sidebar', className: 'nav-child-indent', $checkbox: $child_indent_sidebar_checkbox },
+      { key: 'nav-collapse-hide-child', selector: '.nav-sidebar', className: 'nav-collapse-hide-child', $checkbox: $child_hide_sidebar_checkbox },
+      { key: 'sidebar-no-expand', selector: '.main-sidebar', className: 'sidebar-no-expand', $checkbox: $no_expand_sidebar_checkbox }
+    ];
+
+    prefs.forEach(function(pref) {
+      if (loadPreference(pref.key)) {
+        $(pref.selector).addClass(pref.className);
+        if (pref.$checkbox) {
+          pref.$checkbox.prop('checked', true);
+        }
+      } else {
+        $(pref.selector).removeClass(pref.className);
+        if (pref.$checkbox) {
+          pref.$checkbox.prop('checked', false);
+        }
+      }
+    });
+
+    // Load skin preferences
+    var navbarSkin = loadSkinPreference('navbar');
+    if (navbarSkin) {
+      $('.main-header').removeClass('navbar-dark navbar-light');
+      navbar_all_colors.forEach(function(color) {
+        $('.main-header').removeClass(color);
+      });
+      
+      if (navbar_dark_skins.indexOf(navbarSkin) > -1) {
+        $('.main-header').addClass('navbar-dark');
+      } else {
+        $('.main-header').addClass('navbar-light');
+      }
+      $('.main-header').addClass(navbarSkin);
+      
+      // Update select
+      var activeColor = navbarSkin.replace('navbar-', 'bg-');
+      $navbar_variants_colors.find('option.' + activeColor).prop('selected', true);
+      $navbar_variants_colors.removeClass().addClass('custom-select mb-3 text-light border-0 ').addClass(activeColor);
+    }
+
+    var accentSkin = loadSkinPreference('accent');
+    if (accentSkin) {
+      accent_colors.forEach(function(skin) {
+        $('body').removeClass(skin);
+      });
+      $('body').addClass(accentSkin);
+      $accent_variants.find('option.' + accentSkin.replace('accent-', 'bg-')).prop('selected', true);
+    }
+
+    var sidebarSkin = loadSkinPreference('sidebar');
+    if (sidebarSkin) {
+      sidebar_skins.forEach(function(skin) {
+        $('.main-sidebar').removeClass(skin);
+      });
+      $('.main-sidebar').addClass(sidebarSkin);
+      
+      if (sidebarSkin.includes('sidebar-dark-')) {
+        var darkColor = sidebarSkin.replace('sidebar-dark-', 'bg-');
+        $sidebar_dark_variants.find('option.' + darkColor).prop('selected', true);
+        $sidebar_dark_variants.removeClass().addClass('custom-select mb-3 text-light border-0 ').addClass(darkColor);
+        $('.sidebar').removeClass('os-theme-dark').addClass('os-theme-light');
+      } else {
+        var lightColor = sidebarSkin.replace('sidebar-light-', 'bg-');
+        $sidebar_light_variants.find('option.' + lightColor).prop('selected', true);
+        $sidebar_light_variants.removeClass().addClass('custom-select mb-3 text-light border-0 ').addClass(lightColor);
+        $('.sidebar').removeClass('os-theme-light').addClass('os-theme-dark');
+      }
+    }
+
+    var brandSkin = loadSkinPreference('brand');
+    if (brandSkin) {
+      logo_skins.forEach(function(skin) {
+        $('.brand-link').removeClass(skin);
+      });
+      $('.brand-link').addClass(brandSkin);
+      
+      if (brandSkin === 'navbar-light' || brandSkin === 'navbar-white') {
+        $('.brand-link').addClass('text-black');
+      } else {
+        $('.brand-link').removeClass('text-black');
+      }
+      
+      $brand_variants.find('option.' + brandSkin.replace('navbar-', 'bg-')).prop('selected', true);
+      $brand_variants.removeClass().addClass('custom-select mb-3 text-light border-0 ').addClass(brandSkin.replace('navbar-', 'bg-'));
+    }
+  });
 
   var $dark_mode_checkbox = $('<input />', {
     type: 'checkbox',
@@ -70,9 +197,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('dark-mode')
+      $('body').addClass('dark-mode');
+      savePreference('dark-mode', true);
     } else {
-      $('body').removeClass('dark-mode')
+      $('body').removeClass('dark-mode');
+      savePreference('dark-mode', false);
     }
   })
   var $dark_mode_container = $('<div />', { class: 'mb-4' }).append($dark_mode_checkbox).append('<span>Dark Mode</span>')
@@ -86,9 +215,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('layout-navbar-fixed')
+      $('body').addClass('layout-navbar-fixed');
+      savePreference('layout-navbar-fixed', true);
     } else {
-      $('body').removeClass('layout-navbar-fixed')
+      $('body').removeClass('layout-navbar-fixed');
+      savePreference('layout-navbar-fixed', false);
     }
   })
   var $header_fixed_container = $('<div />', { class: 'mb-1' }).append($header_fixed_checkbox).append('<span>Fixed</span>')
@@ -101,9 +232,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.main-header').addClass('dropdown-legacy')
+      $('.main-header').addClass('dropdown-legacy');
+      savePreference('dropdown-legacy', true);
     } else {
-      $('.main-header').removeClass('dropdown-legacy')
+      $('.main-header').removeClass('dropdown-legacy');
+      savePreference('dropdown-legacy', false);
     }
   })
   var $dropdown_legacy_offset_container = $('<div />', { class: 'mb-1' }).append($dropdown_legacy_offset_checkbox).append('<span>Dropdown Legacy Offset</span>')
@@ -116,9 +249,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.main-header').addClass('border-bottom-0')
+      $('.main-header').addClass('border-bottom-0');
+      savePreference('no-border', true);
     } else {
-      $('.main-header').removeClass('border-bottom-0')
+      $('.main-header').removeClass('border-bottom-0');
+      savePreference('no-border', false);
     }
   })
   var $no_border_container = $('<div />', { class: 'mb-4' }).append($no_border_checkbox).append('<span>No border</span>')
@@ -133,21 +268,25 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('sidebar-collapse')
-      $(window).trigger('resize')
+      $('body').addClass('sidebar-collapse');
+      savePreference('sidebar-collapse', true);
+      $(window).trigger('resize');
     } else {
-      $('body').removeClass('sidebar-collapse')
-      $(window).trigger('resize')
+      $('body').removeClass('sidebar-collapse');
+      savePreference('sidebar-collapse', false);
+      $(window).trigger('resize');
     }
   })
   var $sidebar_collapsed_container = $('<div />', { class: 'mb-1' }).append($sidebar_collapsed_checkbox).append('<span>Collapsed</span>')
   $container.append($sidebar_collapsed_container)
 
   $(document).on('collapsed.lte.pushmenu', '[data-widget="pushmenu"]', function () {
-    $sidebar_collapsed_checkbox.prop('checked', true)
+    $sidebar_collapsed_checkbox.prop('checked', true);
+    savePreference('sidebar-collapse', true);
   })
   $(document).on('shown.lte.pushmenu', '[data-widget="pushmenu"]', function () {
-    $sidebar_collapsed_checkbox.prop('checked', false)
+    $sidebar_collapsed_checkbox.prop('checked', false);
+    savePreference('sidebar-collapse', false);
   })
 
   var $sidebar_fixed_checkbox = $('<input />', {
@@ -157,11 +296,13 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('layout-fixed')
-      $(window).trigger('resize')
+      $('body').addClass('layout-fixed');
+      savePreference('layout-fixed', true);
+      $(window).trigger('resize');
     } else {
-      $('body').removeClass('layout-fixed')
-      $(window).trigger('resize')
+      $('body').removeClass('layout-fixed');
+      savePreference('layout-fixed', false);
+      $(window).trigger('resize');
     }
   })
   var $sidebar_fixed_container = $('<div />', { class: 'mb-1' }).append($sidebar_fixed_checkbox).append('<span>Fixed</span>')
@@ -174,9 +315,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('sidebar-mini')
+      $('body').addClass('sidebar-mini');
+      savePreference('sidebar-mini', true);
     } else {
-      $('body').removeClass('sidebar-mini')
+      $('body').removeClass('sidebar-mini');
+      savePreference('sidebar-mini', false);
     }
   })
   var $sidebar_mini_container = $('<div />', { class: 'mb-1' }).append($sidebar_mini_checkbox).append('<span>Sidebar Mini</span>')
@@ -189,9 +332,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('sidebar-mini-md')
+      $('body').addClass('sidebar-mini-md');
+      savePreference('sidebar-mini-md', true);
     } else {
-      $('body').removeClass('sidebar-mini-md')
+      $('body').removeClass('sidebar-mini-md');
+      savePreference('sidebar-mini-md', false);
     }
   })
   var $sidebar_mini_md_container = $('<div />', { class: 'mb-1' }).append($sidebar_mini_md_checkbox).append('<span>Sidebar Mini MD</span>')
@@ -204,9 +349,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('sidebar-mini-xs')
+      $('body').addClass('sidebar-mini-xs');
+      savePreference('sidebar-mini-xs', true);
     } else {
-      $('body').removeClass('sidebar-mini-xs')
+      $('body').removeClass('sidebar-mini-xs');
+      savePreference('sidebar-mini-xs', false);
     }
   })
   var $sidebar_mini_xs_container = $('<div />', { class: 'mb-1' }).append($sidebar_mini_xs_checkbox).append('<span>Sidebar Mini XS</span>')
@@ -219,9 +366,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.nav-sidebar').addClass('nav-flat')
+      $('.nav-sidebar').addClass('nav-flat');
+      savePreference('nav-flat', true);
     } else {
-      $('.nav-sidebar').removeClass('nav-flat')
+      $('.nav-sidebar').removeClass('nav-flat');
+      savePreference('nav-flat', false);
     }
   })
   var $flat_sidebar_container = $('<div />', { class: 'mb-1' }).append($flat_sidebar_checkbox).append('<span>Nav Flat Style</span>')
@@ -234,9 +383,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.nav-sidebar').addClass('nav-legacy')
+      $('.nav-sidebar').addClass('nav-legacy');
+      savePreference('nav-legacy', true);
     } else {
-      $('.nav-sidebar').removeClass('nav-legacy')
+      $('.nav-sidebar').removeClass('nav-legacy');
+      savePreference('nav-legacy', false);
     }
   })
   var $legacy_sidebar_container = $('<div />', { class: 'mb-1' }).append($legacy_sidebar_checkbox).append('<span>Nav Legacy Style</span>')
@@ -249,9 +400,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.nav-sidebar').addClass('nav-compact')
+      $('.nav-sidebar').addClass('nav-compact');
+      savePreference('nav-compact', true);
     } else {
-      $('.nav-sidebar').removeClass('nav-compact')
+      $('.nav-sidebar').removeClass('nav-compact');
+      savePreference('nav-compact', false);
     }
   })
   var $compact_sidebar_container = $('<div />', { class: 'mb-1' }).append($compact_sidebar_checkbox).append('<span>Nav Compact</span>')
@@ -264,9 +417,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.nav-sidebar').addClass('nav-child-indent')
+      $('.nav-sidebar').addClass('nav-child-indent');
+      savePreference('nav-child-indent', true);
     } else {
-      $('.nav-sidebar').removeClass('nav-child-indent')
+      $('.nav-sidebar').removeClass('nav-child-indent');
+      savePreference('nav-child-indent', false);
     }
   })
   var $child_indent_sidebar_container = $('<div />', { class: 'mb-1' }).append($child_indent_sidebar_checkbox).append('<span>Nav Child Indent</span>')
@@ -279,9 +434,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.nav-sidebar').addClass('nav-collapse-hide-child')
+      $('.nav-sidebar').addClass('nav-collapse-hide-child');
+      savePreference('nav-collapse-hide-child', true);
     } else {
-      $('.nav-sidebar').removeClass('nav-collapse-hide-child')
+      $('.nav-sidebar').removeClass('nav-collapse-hide-child');
+      savePreference('nav-collapse-hide-child', false);
     }
   })
   var $child_hide_sidebar_container = $('<div />', { class: 'mb-1' }).append($child_hide_sidebar_checkbox).append('<span>Nav Child Hide on Collapse</span>')
@@ -294,9 +451,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.main-sidebar').addClass('sidebar-no-expand')
+      $('.main-sidebar').addClass('sidebar-no-expand');
+      savePreference('sidebar-no-expand', true);
     } else {
-      $('.main-sidebar').removeClass('sidebar-no-expand')
+      $('.main-sidebar').removeClass('sidebar-no-expand');
+      savePreference('sidebar-no-expand', false);
     }
   })
   var $no_expand_sidebar_container = $('<div />', { class: 'mb-4' }).append($no_expand_sidebar_checkbox).append('<span>Disable Hover/Focus Auto-Expand</span>')
@@ -310,9 +469,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('layout-footer-fixed')
+      $('body').addClass('layout-footer-fixed');
+      savePreference('layout-footer-fixed', true);
     } else {
-      $('body').removeClass('layout-footer-fixed')
+      $('body').removeClass('layout-footer-fixed');
+      savePreference('layout-footer-fixed', false);
     }
   })
   var $footer_fixed_container = $('<div />', { class: 'mb-4' }).append($footer_fixed_checkbox).append('<span>Fixed</span>')
@@ -327,9 +488,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('body').addClass('text-sm')
+      $('body').addClass('text-sm');
+      savePreference('text-sm-body', true);
     } else {
-      $('body').removeClass('text-sm')
+      $('body').removeClass('text-sm');
+      savePreference('text-sm-body', false);
     }
   })
   var $text_sm_body_container = $('<div />', { class: 'mb-1' }).append($text_sm_body_checkbox).append('<span>Body</span>')
@@ -342,9 +505,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.main-header').addClass('text-sm')
+      $('.main-header').addClass('text-sm');
+      savePreference('text-sm-header', true);
     } else {
-      $('.main-header').removeClass('text-sm')
+      $('.main-header').removeClass('text-sm');
+      savePreference('text-sm-header', false);
     }
   })
   var $text_sm_header_container = $('<div />', { class: 'mb-1' }).append($text_sm_header_checkbox).append('<span>Navbar</span>')
@@ -357,9 +522,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.brand-link').addClass('text-sm')
+      $('.brand-link').addClass('text-sm');
+      savePreference('text-sm-brand', true);
     } else {
-      $('.brand-link').removeClass('text-sm')
+      $('.brand-link').removeClass('text-sm');
+      savePreference('text-sm-brand', false);
     }
   })
   var $text_sm_brand_container = $('<div />', { class: 'mb-1' }).append($text_sm_brand_checkbox).append('<span>Brand</span>')
@@ -372,9 +539,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.nav-sidebar').addClass('text-sm')
+      $('.nav-sidebar').addClass('text-sm');
+      savePreference('text-sm-sidebar', true);
     } else {
-      $('.nav-sidebar').removeClass('text-sm')
+      $('.nav-sidebar').removeClass('text-sm');
+      savePreference('text-sm-sidebar', false);
     }
   })
   var $text_sm_sidebar_container = $('<div />', { class: 'mb-1' }).append($text_sm_sidebar_checkbox).append('<span>Sidebar Nav</span>')
@@ -387,9 +556,11 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.main-footer').addClass('text-sm')
+      $('.main-footer').addClass('text-sm');
+      savePreference('text-sm-footer', true);
     } else {
-      $('.main-footer').removeClass('text-sm')
+      $('.main-footer').removeClass('text-sm');
+      savePreference('text-sm-footer', false);
     }
   })
   var $text_sm_footer_container = $('<div />', { class: 'mb-4' }).append($text_sm_footer_checkbox).append('<span>Footer</span>')
@@ -522,6 +693,7 @@
     }
 
     $main_header.addClass(color)
+    saveSkinPreference('navbar', color)
   })
 
   var active_navbar_color = null
@@ -555,6 +727,7 @@
     var accent_color_class = color.replace('bg-', 'accent-')
 
     $body.addClass(accent_color_class)
+    saveSkinPreference('accent', accent_color_class)
   }, true))
 
   var active_accent_color = null
@@ -586,6 +759,7 @@
     $sidebar_light_variants.find('option').prop('selected', false)
     $sidebar.addClass(sidebar_class)
     $('.sidebar').removeClass('os-theme-dark').addClass('os-theme-light')
+    saveSkinPreference('sidebar', sidebar_class)
   }, true)
   $container.append($sidebar_dark_variants)
 
@@ -619,6 +793,7 @@
     $sidebar_dark_variants.find('option').prop('selected', false)
     $sidebar.addClass(sidebar_class)
     $('.sidebar').removeClass('os-theme-light').addClass('os-theme-dark')
+    saveSkinPreference('sidebar', sidebar_class)
   }, true)
   $container.append($sidebar_light_variants)
 
@@ -649,6 +824,7 @@
     logo_skins.forEach(function (skin) {
       $logo.removeClass(skin)
     })
+    saveSkinPreference('brand', '')
   })
 
   var $brand_variants = createSkinBlock(logo_skins, function () {
@@ -672,6 +848,7 @@
     }
 
     $logo.addClass(color)
+    saveSkinPreference('brand', color)
   }, true).append($clear_btn)
   $container.append($brand_variants)
 
