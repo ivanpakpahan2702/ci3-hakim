@@ -15,6 +15,9 @@
         href="<?php echo base_url('assets/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css'); ?>">
     <link rel="stylesheet"
         href="<?php echo base_url('assets/AdminLTE-3.2.0/plugins/overlayScrollbars/css/OverlayScrollbars.min.css'); ?>">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet"
+        href="<?php echo base_url('assets/AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css'); ?>">
 
     <!-- Bootstrap 5 (CDN) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css">
@@ -31,10 +34,14 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/2.1.2/css/colReorder.bootstrap5.css">
     <!-- Select Datatables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/select/3.1.3/css/select.bootstrap5.css">
+    <!-- Fixed Columns CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.5/css/fixedColumns.bootstrap5.css">
     <!-- AdminLTE Theme style (local) -->
     <link rel="stylesheet" href="<?php echo base_url('assets/AdminLTE-3.2.0/dist/css/adminlte.min.css'); ?>">
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/main.css'); ?>">
     <link rel="stylesheet" href="<?php echo base_url('assets/css/datattables-checkbox.css'); ?>">
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/hakim_perikanan.css'); ?>">
 
 </head>
 

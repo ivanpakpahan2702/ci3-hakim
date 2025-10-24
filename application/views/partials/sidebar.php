@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?php echo base_url('assets/AdminLTE-3.2.0/index3.html'); ?>" class="brand-link">
+    <a href="<?php echo base_url('/admin'); ?>" class="brand-link">
         <img src="<?php echo base_url('assets/AdminLTE-3.2.0/dist/img/AdminLTELogo.png'); ?>" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">MHA</span>
@@ -15,7 +15,7 @@
                     class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <a href="#" class="d-block">Ganis Badilum</a>
             </div>
         </div>
 
@@ -38,7 +38,7 @@
                with font-awesome or any other icon font library -->
                 <li class="nav-item">
                     <a href="<?php echo site_url('admin'); ?>"
-                        class="nav-link <?php echo (isset($title) && $title == 'Dashboard Admin') ? 'active' : ''; ?>">
+                        class="nav-link <?php echo (isset($title) && $title == 'Dashboard Admin' || $title == 'AdHoc Perikanan' || $title == 'Pengadilan Perikanan' || $title == 'Data Usulan' || $title == 'Data Mutasi') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
@@ -47,14 +47,16 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="#"
+                                class="nav-link <?php echo (isset($title) && $title == 'AdHoc Perikanan' || $title == 'Pengadilan Perikanan' || $title == 'Data Usulan' || $title == 'Data Mutasi') ? 'active' : ''; ?>">
                                 <i class="fas fa-fish nav-icon"></i>
-                                <p>AdHoc Perikanan &nbsp;</p>
+                                <p>AdHoc Perikanan</p>
                                 <i class="right fas fa-angle-left"></i>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?php echo site_url('admin/adhoc/perikanan'); ?>" class="nav-link">
+                                    <a href="<?php echo site_url('admin/adhoc/perikanan'); ?>"
+                                        class="nav-link <?php echo (isset($title) && $title == 'AdHoc Perikanan') ? 'active' : ''; ?>">
                                         <i class="fas fa-gavel nav-icon"></i>
                                         <p>Data Hakim</p>
                                     </a>
@@ -62,8 +64,8 @@
                             </ul>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?php echo site_url('admin/AdhocPerikanan/data-pengadilan'); ?>"
-                                        class="nav-link">
+                                    <a href="<?php echo site_url('admin/adhoc/perikanan/data_pengadilan'); ?>"
+                                        class="nav-link <?php echo (isset($title) && $title == 'Pengadilan Perikanan') ? 'active' : ''; ?>">
                                         <i class="fas fa-university nav-icon"></i>
                                         <p>Data Pengadilan</p>
                                     </a>
@@ -71,8 +73,8 @@
                             </ul>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?php echo site_url('admin/AdhocPerikanan/data-usulan'); ?>"
-                                        class="nav-link">
+                                    <a href="<?php echo site_url('admin/adhoc/perikanan/data_usulan'); ?>"
+                                        class="nav-link <?php echo (isset($title) && $title == 'Data Usulan') ? 'active' : ''; ?>">
                                         <i class="fas fa-envelope-open-text nav-icon"></i>
                                         <p>Data Usulan</p>
                                     </a>
@@ -80,8 +82,8 @@
                             </ul>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?php echo site_url('admin/AdhocPerikanan/data-mutasi'); ?>"
-                                        class="nav-link">
+                                    <a href="<?php echo site_url('admin/adhoc/data-mutasi'); ?>"
+                                        class="nav-link <?php echo (isset($title) && $title == 'Data Mutasi') ? 'active' : ''; ?>">
                                         <i class="fas fa-people-arrows nav-icon"></i>
                                         <p>Data Mutasi</p>
                                     </a>

@@ -1,60 +1,60 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-/*
-| -------------------------------------------------------------------------
-| URI ROUTING
-| -------------------------------------------------------------------------
-| This file lets you re-map URI requests to specific controller functions.
-|
-| Typically there is a one-to-one relationship between a URL string
-| and its corresponding controller class/method. The segments in a
-| URL normally follow this pattern:
-|
-|	example.com/class/method/id/
-|
-| In some instances, however, you may want to remap this relationship
-| so that a different class/function is called than the one
-| corresponding to the URL.
-|
-| Please see the user guide for complete details:
-|
-|	https://codeigniter.com/userguide3/general/routing.html
-|
-| -------------------------------------------------------------------------
-| RESERVED ROUTES
-| -------------------------------------------------------------------------
-|
-| There are three reserved routes:
-|
-|	$route['default_controller'] = 'welcome';
-|
-| This route indicates which controller class should be loaded if the
-| URI contains no data. In the above example, the "welcome" class
-| would be loaded.
-|
-|	$route['404_override'] = 'errors/page_missing';
-|
-| This route will tell the Router which controller/method to use if those
-| provided in the URL cannot be matched to a valid route.
-|
-|	$route['translate_uri_dashes'] = FALSE;
-|
-| This is not exactly a route, but allows you to automatically route
-| controller and method names that contain dashes. '-' isn't a valid
-| class or method name character, so it requires translation.
-| When you set this option to TRUE, it will replace ALL dashes in the
-| controller and method URI segments.
-|
-| Examples:	my-controller/index	-> my_controller/index
-|		my-controller/my-method	-> my_controller/my_method
-*/
 $route['default_controller'] = 'welcome';
 $route['admin'] = 'AdminController/index';
 
 // mapping spesifik dan fallback untuk controller AdhocPerikanan
-$route['admin/adhoc/perikanan'] = 'Admin/AdhocPerikanan/index';
+$route['admin/adhoc/perikanan'] = 'Admin/AdhocPerikanan/data_hakim';
 $route['admin/adhoc/perikanan/get_data'] = 'Admin/AdhocPerikanan/get_data';
+$route['admin/adhoc/perikanan/get_pengadilan'] = 'Admin/AdhocPerikanan/get_pengadilan';
+$route['admin/adhoc/perikanan/tambah_hakim'] = 'Admin/AdhocPerikanan/tambah_hakim';
+$route['admin/adhoc/perikanan/get_data_by_id/(:num)'] = 'Admin/AdhocPerikanan/get_data_by_id/$1';
+$route['admin/adhoc/perikanan/update_hakim'] = 'Admin/AdhocPerikanan/update_hakim';
+$route['admin/adhoc/perikanan/hapus_hakim'] = 'Admin/AdhocPerikanan/hapus_hakim';
+// Route untuk fitur usulan
+$route['admin/adhoc/perikanan/data_usulan'] = 'Admin/UsulanPerikanan/data_usulan';
+$route['admin/adhoc/perikanan/simpan_usulan'] = 'Admin/AdhocPerikanan/simpan_usulan';
+$route['admin/adhoc/perikanan/get_usulan'] = 'Admin/UsulanPerikanan/get_usulan';
+$route['admin/adhoc/perikanan/get_usulan_by_id/(:num)'] = 'Admin/UsulanPerikanan/get_usulan_by_id/$1';
+$route['admin/adhoc/perikanan/tambah_usulan'] = 'Admin/UsulanPerikanan/tambah_usulan';
+$route['admin/adhoc/perikanan/update_usulan'] = 'Admin/UsulanPerikanan/update_usulan';
+$route['admin/adhoc/perikanan/hapus_usulan'] = 'Admin/AdhocPerikanan/hapus_usulan';
+$route['admin/adhoc/perikanan/get_pengadilan_list'] = 'Admin/UsulanPerikanan/get_pengadilan_list';
+// Routes untuk usulan perikanan
+$route['admin/adhoc/perikanan/data_usulan'] = 'Admin/UsulanPerikanan/data_usulan';
+$route['admin/adhoc/perikanan/get_usulan'] = 'Admin/UsulanPerikanan/get_usulan';
+$route['admin/adhoc/perikanan/tambah_usulan'] = 'Admin/UsulanPerikanan/tambah_usulan';
+$route['admin/adhoc/perikanan/update_usulan'] = 'Admin/UsulanPerikanan/update_usulan';
+$route['admin/adhoc/perikanan/hapus_usulan/(:num)'] = 'Admin/UsulanPerikanan/hapus_usulan/$1';
+$route['admin/adhoc/perikanan/get_pengadilan_list'] = 'Admin/UsulanPerikanan/get_pengadilan_list';
+$route['admin/adhoc/perikanan/get_hakim_list'] = 'Admin/UsulanPerikanan/get_hakim_list';
+$route['admin/usulanperikanan/get_drp_by_usulan_ids'] = 'Admin/UsulanPerikanan/get_drp_by_usulan_ids';
+// Route untuk fitur mutasi
+$route['admin/adhoc/perikanan/mutasi_hakim'] = 'Admin/AdhocPerikanan/mutasi_hakim';
+$route['admin/adhoc/perikanan/get_mutasi_by_hakim/(:num)'] = 'Admin/AdhocPerikanan/get_mutasi_by_hakim/$1';
+// Routes untuk usulan mutasi
+$route['admin/adhoc/data-mutasi'] = 'Admin/MutasiPerikanan/data_mutasi';
+$route['admin/adhoc/perikanan/get_drp_by_hakim_ids'] = 'Admin/UsulanPerikanan/get_drp_by_hakim_ids';
+$route['admin/adhoc/perikanan/get_drp_by_ids'] = 'Admin/UsulanPerikanan/get_drp_by_ids';
+// Routes untuk mutasi perikanan
+$route['admin/adhoc/data-mutasi'] = 'Admin/MutasiPerikanan/data_mutasi';
+$route['admin/adhoc/data-mutasi/get_mutasi'] = 'Admin/MutasiPerikanan/get_mutasi';
+$route['admin/adhoc/data-mutasi/get_mutasi_by_id/(:num)'] = 'Admin/MutasiPerikanan/get_mutasi_by_id/$1';
+$route['admin/adhoc/data-mutasi/tambah_mutasi'] = 'Admin/MutasiPerikanan/tambah_mutasi';
+$route['admin/adhoc/data-mutasi/update_mutasi'] = 'Admin/MutasiPerikanan/update_mutasi';
+$route['admin/adhoc/data-mutasi/hapus_mutasi/(:num)'] = 'Admin/MutasiPerikanan/hapus_mutasi/$1';
+$route['admin/adhoc/data-mutasi/get_pengadilan_list'] = 'Admin/MutasiPerikanan/get_pengadilan_list';
+$route['admin/adhoc/data-mutasi/get_hakim_list'] = 'Admin/MutasiPerikanan/get_hakim_list';
+$route['admin/adhoc/data-mutasi/get_hakim_by_id/(:num)'] = 'Admin/MutasiPerikanan/get_hakim_by_id/$1';
+// mapping spesifik dan fallback untuk controller PengadilanPerikanan
+$route['admin/adhoc/perikanan/data_pengadilan'] = 'Admin/PengadilanPerikanan/data_pengadilan';
+$route['admin/adhoc/perikanan/get_data_pengadilan'] = 'Admin/PengadilanPerikanan/get_data_pengadilan';
+$route['admin/adhoc/perikanan/tambah_pengadilan'] = 'Admin/PengadilanPerikanan/tambah_pengadilan';
+$route['admin/adhoc/perikanan/get_pengadilan_by_id/(:num)'] = 'Admin/PengadilanPerikanan/get_pengadilan_by_id/$1';
+$route['admin/adhoc/perikanan/update_pengadilan'] = 'Admin/PengadilanPerikanan/update_pengadilan';
+$route['admin/adhoc/perikanan/hapus_pengadilan'] = 'Admin/PengadilanPerikanan/hapus_pengadilan';
+$route['admin/adhoc/perikanan/get_hakim_by_pengadilan/(:num)'] = 'Admin/PengadilanPerikanan/get_hakim_by_pengadilan/$1';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
