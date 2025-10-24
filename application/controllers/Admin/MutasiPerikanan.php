@@ -190,8 +190,20 @@ class MutasiPerikanan extends CI_Controller
                 $result = $this->mutasi_model->update_mutasi($id, $data);
 
                 if ($result) {
+                    // Jika pertukaran
+                    if ($old_asal == $new_hasil && $old_hasil == $new_asal) {
+                        // Update pengadilan asal lama
+                        $this->db->set('jumlah_adhoc_sekarang', 'jumlah_adhoc_sekarang+1', FALSE)
+                            ->where('id', $old_asal)
+                            ->update('pengadilan_perikanan');
+                        // Update pengadilan hasil TPM lama
+                        $this->db->set('jumlah_adhoc_sekarang', 'jumlah_adhoc_sekarang-1', FALSE)
+                            ->where('id', $old_hasil)
+                            ->update('pengadilan_perikanan');
+                    }
+
                     // Jika pengadilan asal berubah
-                    if ($old_asal && $new_asal && $old_asal != $new_asal) {
+                    else if ($old_asal && $new_asal && $old_asal != $new_asal) {
                         $this->db->set('jumlah_adhoc_sekarang', 'jumlah_adhoc_sekarang-1', FALSE)
                             ->where('id', $old_asal)
                             ->update('pengadilan_perikanan');
@@ -200,7 +212,7 @@ class MutasiPerikanan extends CI_Controller
                             ->update('pengadilan_perikanan');
                     }
                     // Jika pengadilan hasil TPM berubah
-                    if ($old_hasil && $new_hasil && $old_hasil != $new_hasil) {
+                    else if ($old_hasil && $new_hasil && $old_hasil != $new_hasil) {
                         $this->db->set('jumlah_adhoc_sekarang', 'jumlah_adhoc_sekarang-1', FALSE)
                             ->where('id', $old_hasil)
                             ->update('pengadilan_perikanan');

@@ -1757,6 +1757,9 @@
                             var days = (dayDiff % 365) % 30;
                             months = months.toString();
                             days = days.toString();
+                            if (years.length == 1) {
+                                years = '0' + years;
+                            }
                             if (months.length == 1) {
                                 months = '0' + months;
                             }

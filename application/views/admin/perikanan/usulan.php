@@ -1788,8 +1788,8 @@ $this->load->view('./partials/head');
             });
         }
 
-        // Fungsi untuk export DRP ke Excel dengan format 11 baris dan align top
-        function exportDRPToExcel() {
+        // Fungsi untuk export DRP ke Excel menggunakan exceljs
+        async function exportDRPToExcel() {
             // Kumpulkan data yang dipilih
             var selectedUsulanIds = [];
             $('.row-checkbox:checked').each(function () {
@@ -1805,165 +1805,293 @@ $this->load->view('./partials/head');
                 return;
             }
 
-            // Ambil data DRP dari server
-            $.ajax({
-                url: "<?php echo site_url('admin/usulanperikanan/get_drp_by_usulan_ids'); ?>",
-                type: "POST",
-                data: { ids: selectedUsulanIds },
-                dataType: "json",
-                success: function (drpList) {
-                    if (!Array.isArray(drpList) || drpList.length === 0) {
-                        showAlert('error', 'Error', 'Tidak ada data DRP untuk diexport');
-                        return;
+            try {
+                // Tampilkan loading
+                const loadingAlert = Swal.fire({
+                    title: 'Mempersiapkan Excel...',
+                    text: 'Sedang memproses data untuk export',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Ambil data DRP dari server
+                const response = await $.ajax({
+                    url: "<?php echo site_url('admin/usulanperikanan/get_drp_by_usulan_ids'); ?>",
+                    type: "POST",
+                    data: { ids: selectedUsulanIds },
+                    dataType: "json"
+                });
+
+                const drpList = response;
+
+                if (!Array.isArray(drpList) || drpList.length === 0) {
+                    await loadingAlert.close();
+                    showAlert('error', 'Error', 'Tidak ada data DRP untuk diexport');
+                    return;
+                }
+
+                // Buat workbook baru dengan exceljs
+                const workbook = new ExcelJS.Workbook();
+                workbook.creator = 'Sistem Perikanan';
+                workbook.lastModifiedBy = 'Sistem Perikanan';
+                workbook.created = new Date();
+                workbook.modified = new Date();
+
+                // Buat worksheet
+                const worksheet = workbook.addWorksheet('DRP Hakim Ad Hoc Perikanan');
+
+                // Define columns dengan lebar yang sesuai
+                worksheet.columns = [
+                    { width: 5 },   // No
+                    { width: 12 },  // Biodata (label)
+                    { width: 3 },   // Titik dua
+                    { width: 30 },  // Nilai biodata
+                    { width: 25 },  // Jabatan
+                    { width: 25 },  // Pengadilan
+                    { width: 15 },  // Riwayat tanggal
+                    { width: 30 },  // Riwayat jabatan
+                    { width: 20 },  // Keterangan
+                    { width: 20 }   // Foto
+                ];
+
+                // Style untuk header
+                const headerStyle = {
+                    font: {
+                        name: 'Arial',
+                        size: 12,
+                        bold: true,
+                        color: { argb: '000000' }
+                    },
+                    alignment: {
+                        vertical: 'middle',
+                        horizontal: 'center',
+                        wrapText: true
+                    },
+                    fill: {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'D3D3D3' }
+                    },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+
+                // Style untuk data
+                const dataStyle = {
+                    font: {
+                        name: 'Arial',
+                        size: 10
+                    },
+                    alignment: {
+                        vertical: 'top',
+                        wrapText: true
+                    },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+
+                // Style untuk hyperlink
+                const linkStyle = {
+                    font: {
+                        name: 'Arial',
+                        size: 10,
+                        color: { argb: '0000FF' },
+                        underline: true,
+                        bold: true
+                    },
+                    alignment: {
+                        vertical: 'top',
+                        horizontal: 'center'
+                    },
+                    fill: {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'F0F8FF' }
+                    },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+
+                // HEADER BARIS 1
+                const headerRow1 = worksheet.addRow([
+                    'No', 'Biodata', '', '', 'Jabatan', 'Pengadilan', 'Riwayat Pekerjaan', '', 'Keterangan', 'Foto'
+                ]);
+
+                // Apply style ke header baris 1
+                headerRow1.eachCell((cell) => {
+                    cell.style = headerStyle;
+                });
+
+                // Merge cells untuk header baris 1
+                worksheet.mergeCells('B1:D1'); // Biodata
+                worksheet.mergeCells('G1:H1'); // Riwayat Pekerjaan
+
+                // HEADER BARIS 2
+                const headerRow2 = worksheet.addRow([
+                    '', '', '', '', '', '', 'Tanggal', 'Jabatan', '', ''
+                ]);
+
+                // Apply style ke header baris 2
+                headerRow2.eachCell((cell) => {
+                    cell.style = headerStyle;
+                });
+
+                // Set tinggi baris header
+                headerRow1.height = 30;
+                headerRow2.height = 30;
+
+                // PROCESS DATA
+                let currentRow = 3; // Mulai dari row 3 (setelah header)
+
+                drpList.forEach((row, index) => {
+                    const nomor = index + 1;
+
+                    // Siapkan foto URL
+                    let fotoUrl = '';
+                    if (row.sumber_foto === 'sikep') {
+                        fotoUrl = row.foto_pegawai
+                            ? 'https://sikep.mahkamahagung.go.id/uploads/foto_pegawai/' + row.foto_pegawai
+                            : '';
+                    } else {
+                        fotoUrl = row.foto_pegawai
+                            ? "<?php echo base_url('uploads/foto_hakim/'); ?>" + row.foto_pegawai
+                            : '';
                     }
 
-                    // Buat workbook baru
-                    const wb = XLSX.utils.book_new();
+                    // Parse data
+                    const riwayatPekerjaan = row.riwayat_pekerjaan ? row.riwayat_pekerjaan.split('|').map(item => item.trim()) : [];
+                    const riwayatTanggal = riwayatPekerjaan.map(item => item.split(' - ')[0] || '').filter(item => item);
+                    const riwayatJabatan = riwayatPekerjaan.map(item => item.split(' - ')[1] || '').filter(item => item);
+                    const pendidikanList = row.pendidikan ? row.pendidikan.split('|').map(item => item.trim()) : [];
+                    const keteranganList = row.keterangan ? row.keterangan.split('|').map(item => item.trim()) : [];
 
-                    // Siapkan data untuk Excel dengan format yang benar
-                    const excelData = [];
+                    // Data untuk 11 baris per hakim
+                    const barisData = [
+                        ['Nama', row.nama_drp || row.nama_hakim || '-', riwayatTanggal[0] || '-', riwayatJabatan[0] || '-', keteranganList[0] || '-'],
+                        ['NIP', row.nip || '-', riwayatTanggal[1] || '-', riwayatJabatan[1] || '-', keteranganList[1] || '-'],
+                        ['GOL.Ruang', row.gol_ruang || '-', riwayatTanggal[2] || '-', riwayatJabatan[2] || '-', keteranganList[2] || '-'],
+                        ['TP/TGL Lahir', row.tp_tgl_lahir || '-', riwayatTanggal[3] || '-', riwayatJabatan[3] || '-', keteranganList[3] || '-'],
+                        ['Jenis Kelamin', row.jenis_kelamin || '-', riwayatTanggal[4] || '-', riwayatJabatan[4] || '-', keteranganList[4] || '-'],
+                        ['ISTERI/SUAMI', row.isteri_suami || '-', riwayatTanggal[5] || '-', riwayatJabatan[5] || '-', keteranganList[5] || '-'],
+                        ['Anak', row.anak || '0', riwayatTanggal[6] || '-', riwayatJabatan[6] || '-', keteranganList[6] || '-'],
+                        ['Agama', row.agama || '-', riwayatTanggal[7] || '-', riwayatJabatan[7] || '-', keteranganList[7] || '-'],
+                        ['Pendidikan', pendidikanList.join('\n') || '-', riwayatTanggal[8] || '-', riwayatJabatan[8] || '-', keteranganList[8] || '-'],
+                        ['Email', row.email || '-', riwayatTanggal[9] || '-', riwayatJabatan[9] || '-', keteranganList[9] || '-'],
+                        ['Usulan', row.usulan || '-', riwayatTanggal[10] || '-', riwayatJabatan[10] || '-', keteranganList[10] || '-']
+                    ];
 
-                    // Header tabel dengan rowspan dan colspan
-                    excelData.push([
-                        { v: 'No', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Biodata', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Nilai', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Jabatan', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Pengadilan', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Riwayat Pekerjaan', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Keterangan', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Foto', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } } // Kolom baru untuk foto
-                    ]);
+                    // Tambahkan data untuk setiap baris
+                    barisData.forEach((baris, idx) => {
+                        const rowNumber = currentRow + idx;
+                        const excelRow = worksheet.getRow(rowNumber);
 
-                    // Sub-header untuk riwayat pekerjaan
-                    excelData.push([
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Label', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Nilai', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Tanggal', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: 'Jabatan', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } },
-                        { v: '', s: { alignment: { vertical: 'top', horizontal: 'center' }, font: { bold: true } } } // Kolom baru untuk sub-header (kosong)
-                    ]);
+                        // Set nilai untuk setiap cell
+                        excelRow.getCell(1).value = idx === 0 ? nomor : '';
+                        excelRow.getCell(2).value = baris[0];
+                        excelRow.getCell(3).value = ':';
+                        excelRow.getCell(4).value = baris[1];
+                        excelRow.getCell(5).value = idx === 0 ? (row.jabatan || '-') : '';
+                        excelRow.getCell(6).value = idx === 0 ? (row.pengadilan || '-') : '';
+                        excelRow.getCell(7).value = baris[2];
+                        excelRow.getCell(8).value = baris[3];
+                        excelRow.getCell(9).value = baris[4];
 
-                    // Style untuk data cells (align top)
-                    const dataStyle = { alignment: { vertical: 'top', wrapText: true } };
-                    // Style untuk hyperlink
-                    const linkStyle = {
-                        alignment: { vertical: 'top', horizontal: 'center' },
-                        font: { color: { rgb: '0000FF' }, underline: true },
-                        fill: { fgColor: { rgb: 'F0F8FF' } }
-                    };
+                        // Apply data style ke semua cell
+                        for (let col = 1; col <= 9; col++) {
+                            excelRow.getCell(col).style = dataStyle;
+                        }
 
-                    drpList.forEach(function (row, index) {
-                        const nomor = index + 1;
-
-                        // Siapkan foto URL
-                        let fotoUrl = '';
-                        if (row.sumber_foto === 'sikep') {
-                            fotoUrl = row.foto_pegawai
-                                ? 'https://sikep.mahkamahagung.go.id/uploads/foto_pegawai/' + row.foto_pegawai
-                                : '';
+                        // Handle kolom foto (kolom 10)
+                        if (idx === 0 && fotoUrl) {
+                            excelRow.getCell(10).value = {
+                                text: 'Klik Untuk Lihat Foto',
+                                hyperlink: fotoUrl
+                            };
+                            excelRow.getCell(10).style = linkStyle;
                         } else {
-                            fotoUrl = row.foto_pegawai
-                                ? "<?php echo base_url('uploads/foto_hakim/'); ?>" + row.foto_pegawai
-                                : '';
+                            excelRow.getCell(10).value = '';
+                            excelRow.getCell(10).style = dataStyle;
                         }
 
-                        // Parse data
-                        const riwayatPekerjaan = row.riwayat_pekerjaan ? row.riwayat_pekerjaan.split('|').map(item => item.trim()) : [];
-                        const riwayatTanggal = riwayatPekerjaan.map(item => item.split(' - ')[0] || '').filter(item => item);
-                        const riwayatJabatan = riwayatPekerjaan.map(item => item.split(' - ')[1] || '').filter(item => item);
-                        const pendidikanList = row.pendidikan ? row.pendidikan.split('|').map(item => item.trim()) : [];
-                        const keteranganList = row.keterangan ? row.keterangan.split('|').map(item => item.trim()) : [];
-
-                        // Data untuk 11 baris per hakim
-                        const barisData = [
-                            ['Nama', row.nama_drp || row.nama_hakim || '-', riwayatTanggal[0] || '-', riwayatJabatan[0] || '-', keteranganList[0] || '-'],
-                            ['NIP', row.nip || '-', riwayatTanggal[1] || '-', riwayatJabatan[1] || '-', keteranganList[1] || '-'],
-                            ['GOL.Ruang', row.gol_ruang || '-', riwayatTanggal[2] || '-', riwayatJabatan[2] || '-', keteranganList[2] || '-'],
-                            ['TP/TGL Lahir', row.tp_tgl_lahir || '-', riwayatTanggal[3] || '-', riwayatJabatan[3] || '-', keteranganList[3] || '-'],
-                            ['Jenis Kelamin', row.jenis_kelamin || '-', riwayatTanggal[4] || '-', riwayatJabatan[4] || '-', keteranganList[4] || '-'],
-                            ['ISTERI/SUAMI', row.isteri_suami || '-', riwayatTanggal[5] || '-', riwayatJabatan[5] || '-', keteranganList[5] || '-'],
-                            ['Anak', row.anak || '0', riwayatTanggal[6] || '-', riwayatJabatan[6] || '-', keteranganList[6] || '-'],
-                            ['Agama', row.agama || '-', riwayatTanggal[7] || '-', riwayatJabatan[7] || '-', keteranganList[7] || '-'],
-                            ['Pendidikan', pendidikanList.join('\n') || '-', riwayatTanggal[8] || '-', riwayatJabatan[8] || '-', keteranganList[8] || '-'],
-                            ['Email', row.email || '-', riwayatTanggal[9] || '-', riwayatJabatan[9] || '-', keteranganList[9] || '-'],
-                            ['Usulan', row.usulan || '-', riwayatTanggal[10] || '-', riwayatJabatan[10] || '-', keteranganList[10] || '-']
-                        ];
-
-                        // Tambahkan data untuk setiap baris
-                        barisData.forEach((baris, idx) => {
-                            const rowData = [
-                                { v: idx === 0 ? nomor : '', s: dataStyle }, // No hanya di baris pertama
-                                { v: baris[0], s: dataStyle }, // Label
-                                { v: ':', s: dataStyle }, // Titik dua
-                                { v: baris[1], s: dataStyle }, // Nilai
-                                { v: idx === 0 ? (row.jabatan || '-') : '', s: dataStyle }, // Jabatan hanya di baris pertama
-                                { v: idx === 0 ? (row.pengadilan || '-') : '', s: dataStyle }, // Pengadilan hanya di baris pertama
-                                { v: baris[2], s: dataStyle }, // Riwayat Tanggal
-                                { v: baris[3], s: dataStyle }, // Riwayat Jabatan
-                                { v: baris[4], s: dataStyle }, // Keterangan
-                                // Kolom foto: hanya di baris pertama (idx=0) dan jika ada foto
-                                idx === 0 && fotoUrl
-                                    ? {
-                                        v: 'Klik Untuk Lihat Foto',
-                                        l: { Target: fotoUrl, Tooltip: 'Lihat Foto ' + (row.nama_drp || row.nama_hakim || 'Hakim') },
-                                        s: linkStyle
-                                    }
-                                    : { v: '', s: dataStyle }
-                            ];
-                            excelData.push(rowData);
-                        });
-
-                        // Tambahkan baris kosong sebagai pemisah antar hakim
-                        if (index < drpList.length - 1) {
-                            excelData.push(Array(10).fill({ v: '', s: dataStyle })); // 10 kolom sekarang
-                        }
+                        // Set tinggi baris
+                        excelRow.height = 30;
                     });
 
-                    // Buat worksheet dari data
-                    const ws = XLSX.utils.aoa_to_sheet(excelData);
-
-                    // Atur lebar kolom
-                    const wscols = [
-                        { wch: 5 },   // No
-                        { wch: 12 },  // Biodata (label)
-                        { wch: 3 },   // Titik dua
-                        { wch: 30 },  // Nilai biodata
-                        { wch: 25 },  // Jabatan
-                        { wch: 25 },  // Pengadilan
-                        { wch: 15 },  // Riwayat tanggal
-                        { wch: 30 },  // Riwayat jabatan
-                        { wch: 20 },  // Keterangan
-                        { wch: 20 }   // Foto (kolom baru)
-                    ];
-                    ws['!cols'] = wscols;
-
-                    // Atur tinggi baris untuk semua baris (termasuk header)
-                    const wsrows = [];
-                    for (let i = 0; i < excelData.length; i++) {
-                        wsrows.push({ hpt: 30 }); // Tinggi baris 30 point
+                    // Merge cells untuk kolom Jabatan, Pengadilan, dan Foto (hanya di baris pertama setiap hakim)
+                    for (let col = 5; col <= 6; col++) {
+                        if (barisData.length > 1) {
+                            worksheet.mergeCells(
+                                currentRow, col,
+                                currentRow + barisData.length - 1, col
+                            );
+                        }
                     }
-                    ws['!rows'] = wsrows;
 
-                    // Tambahkan worksheet ke workbook
-                    XLSX.utils.book_append_sheet(wb, ws, 'DRP Hakim Ad Hoc Perikanan');
+                    // Merge kolom Foto
+                    if (barisData.length > 1) {
+                        worksheet.mergeCells(
+                            currentRow, 10,
+                            currentRow + barisData.length - 1, 10
+                        );
+                    }
 
-                    // Simpan file Excel
-                    const fileName = `DRP_Hakim_Ad_Hoc_Perikanan_${new Date().toISOString().slice(0, 10)}.xlsx`;
-                    XLSX.writeFile(wb, fileName);
-                },
-                error: function () {
-                    showAlert('error', 'Error', 'Gagal mengambil data untuk export');
-                }
-            });
+                    currentRow += barisData.length;
+
+                    // Tambahkan baris kosong sebagai pemisah antar hakim
+                    if (index < drpList.length - 1) {
+                        const emptyRow = worksheet.getRow(currentRow);
+                        for (let col = 1; col <= 10; col++) {
+                            emptyRow.getCell(col).value = '';
+                            emptyRow.getCell(col).style = dataStyle;
+                        }
+                        emptyRow.height = 10;
+                        currentRow++;
+                    }
+                });
+
+                // Freeze panes - header baris 1 dan 2 akan tetap terlihat
+                worksheet.views = [
+                    {
+                        state: 'frozen',
+                        xSplit: 0,
+                        ySplit: 2, // Bekukan 2 baris pertama
+                        activeCell: 'A3'
+                    }
+                ];
+
+                // Sembunyikan loading
+                await loadingAlert.close();
+
+                // Simpan file
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+
+                saveAs(blob, `DRP_Hakim_Ad_Hoc_Perikanan_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+                showAlert('success', 'Berhasil', 'File Excel berhasil diexport!');
+
+            } catch (error) {
+                console.error('Error exporting Excel:', error);
+                showAlert('error', 'Error', 'Gagal mengexport data: ' + error.message);
+            }
         }
+
         console.log('Semua event handler berhasil diinisialisasi');
     });
 </script>
