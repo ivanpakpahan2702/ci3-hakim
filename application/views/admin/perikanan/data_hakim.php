@@ -1931,7 +1931,11 @@
             e.preventDefault();
 
             // Validasi masa jabatan sebelum submit
-            if (!validateMasaJabatan('tambah')) {
+            var masaJabatan = $('#selectMasaJabatan').val();
+            if (!masaJabatan) {
+                showAlert('warning', 'Validasi', 'Masa Jabatan wajib dipilih!');
+                $('#selectMasaJabatan').focus();
+                e.preventDefault();
                 return false;
             }
 
@@ -2095,7 +2099,11 @@
             e.preventDefault();
 
             // Validasi masa jabatan sebelum submit
-            if (!validateMasaJabatan('edit')) {
+            var masaJabatan = $('#edit_masa_jabatan').val();
+            if (!masaJabatan) {
+                showAlert('warning', 'Validasi', 'Masa Jabatan wajib dipilih!');
+                $('#edit_masa_jabatan').focus();
+                e.preventDefault();
                 return false;
             }
 

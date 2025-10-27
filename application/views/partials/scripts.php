@@ -106,15 +106,15 @@
     document.getElementById('alerJSNyanCat').addEventListener('click', function () {
         Swal.fire({
             title: "Tentang Aplikasi",
-            html: `Aplikasi Manajemen Hakim AdHoc Perikanan \n <br> Dibuat oleh Ganis Badilum \n <br> Versi 1.0.0 \n <br> Hak Cipta 2025`,
+            html: `Aplikasi Manajemen Hakim AdHoc \n <br> Dibuat oleh Ganis Badilum \n <br> Versi 1.0.0 \n <br> Hak Cipta 2025`,
             width: 600,
             padding: "3em",
             color: "#716add",
             background: "#fff url(https://sweetalert2.github.io/images/trees.png)",
             backdrop: `
     rgba(0,0,123,0.4)
-    url("/images/nyan-cat.gif")
-    left top
+    url("https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzBycmh3bmFxcWxkdHhpZWpydjZvM2dsejZ4ZzVkcjh6dndmNGF5YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mTZNG7cWWHbvVT5Lrg/giphy.gif")
+    top left
     no-repeat
   `
         });

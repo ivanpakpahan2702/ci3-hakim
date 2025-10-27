@@ -810,19 +810,56 @@
         }
     }
 
-    // Inisialisasi Select2 untuk kelas
+    // PERBAIKAN: Inisialisasi Select2 untuk kelas dengan cara yang benar
     function initSelect2Kelas() {
         try {
-            $('.select2-kelas').select2({
+            // Inisialisasi untuk modal tambah
+            $('#modalTambahPengadilan .select2-kelas').select2({
                 theme: 'bootstrap4',
                 width: '100%',
                 placeholder: 'Pilih Kelas',
-                allowClear: true
+                allowClear: true,
+                dropdownParent: $('#modalTambahPengadilan')
             });
-            console.log('Select2 kelas berhasil diinisialisasi');
+
+            // Inisialisasi untuk modal edit
+            $('#modalEditPengadilan .select2-kelas').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Pilih Kelas',
+                allowClear: true,
+                dropdownParent: $('#modalEditPengadilan')
+            });
+
+            console.log('Select2 kelas berhasil diinisialisasi untuk modal');
         } catch (error) {
             console.warn('Select2 kelas tidak tersedia:', error);
         }
+    }
+
+    // TAMBAHAN: Inisialisasi Select2 pada modal saat dibuka
+    function initSelect2OnModalShow() {
+        // Inisialisasi ulang Select2 ketika modal tambah ditampilkan
+        $('#modalTambahPengadilan').on('shown.bs.modal', function () {
+            $('#modalTambahPengadilan .select2-kelas').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Pilih Kelas',
+                allowClear: true,
+                dropdownParent: $('#modalTambahPengadilan')
+            });
+        });
+
+        // Inisialisasi ulang Select2 ketika modal edit ditampilkan
+        $('#modalEditPengadilan').on('shown.bs.modal', function () {
+            $('#modalEditPengadilan .select2-kelas').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Pilih Kelas',
+                allowClear: true,
+                dropdownParent: $('#modalEditPengadilan')
+            });
+        });
     }
 
     // Fungsi untuk setup carousel dengan gambar dari database
@@ -1071,6 +1108,7 @@
         // Inisialisasi komponen utama
         initSelect2Main();
         initSelect2Kelas();
+        initSelect2OnModalShow(); // TAMBAHAN: Inisialisasi modal events
 
         // Event listener untuk input perkara di modal tambah
         $('.perkara-input').on('input', updatePerhitunganTambah);
@@ -1386,8 +1424,8 @@
             // Reset perhitungan
             $('#rerata').val('');
             $('#jumlah_adhoc_ideal').val('');
-            // Reset select2
-            $('.select2-kelas').val('').trigger('change');
+            // Reset select2 - PERBAIKAN: Reset dengan cara yang benar
+            $('#modalTambahPengadilan .select2-kelas').val('').trigger('change');
             $('#modalTambahPengadilan').modal('show');
         });
 

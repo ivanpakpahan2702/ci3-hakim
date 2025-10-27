@@ -37,6 +37,7 @@ $route['admin/adhoc/perikanan/get_mutasi_by_hakim/(:num)'] = 'Admin/AdhocPerikan
 $route['admin/adhoc/data-mutasi'] = 'Admin/MutasiPerikanan/data_mutasi';
 $route['admin/adhoc/perikanan/get_drp_by_hakim_ids'] = 'Admin/UsulanPerikanan/get_drp_by_hakim_ids';
 $route['admin/adhoc/perikanan/get_drp_by_ids'] = 'Admin/UsulanPerikanan/get_drp_by_ids';
+$route['admin/adhoc/perikanan/get_image_proxy/(:any)'] = 'Admin/UsulanPerikanan/get_image_proxy/$1';
 // Routes untuk mutasi perikanan
 $route['admin/adhoc/data-mutasi'] = 'Admin/MutasiPerikanan/data_mutasi';
 $route['admin/adhoc/data-mutasi/get_mutasi'] = 'Admin/MutasiPerikanan/get_mutasi';

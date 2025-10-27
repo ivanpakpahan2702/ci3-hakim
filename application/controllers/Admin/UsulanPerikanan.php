@@ -453,4 +453,57 @@ class UsulanPerikanan extends CI_Controller
         $this->output->set_content_type('application/json')
             ->set_output(json_encode($data));
     }
+
+    // Tambahkan function ini di controller Perikanan (application/controllers/admin/Adhoc/Perikanan.php)
+
+    public function get_image_proxy($filename)
+    {
+        // Daftar ekstensi yang diizinkan
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'jfif'];
+        $file_extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        if (!in_array($file_extension, $allowed_extensions)) {
+            header("HTTP/1.0 400 Bad Request");
+            exit('File type not allowed');
+        }
+
+        // URL gambar di server SIKEP
+        $image_url = 'https://sikep.mahkamahagung.go.id/uploads/foto_pegawai/' . $filename;
+
+        // Inisialisasi cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $image_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+        // Set user agent untuk menghindari blokir
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+
+        $image_data = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+
+        curl_close($ch);
+
+        if ($http_code === 200 && $image_data) {
+            // Set header yang sesuai
+            header('Content-Type: ' . $content_type);
+            header('Cache-Control: public, max-age=86400'); // Cache 1 hari
+            echo $image_data;
+        } else {
+            // Fallback ke gambar placeholder
+            $placeholder_path = FCPATH . 'assets/images/placeholder.jpg';
+            if (file_exists($placeholder_path)) {
+                header('Content-Type: image/jpeg');
+                readfile($placeholder_path);
+
+            } else {
+                header("HTTP/1.0 404 Not Found");
+            }
+        }
+        exit;
+    }
+
 }

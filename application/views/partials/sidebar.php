@@ -34,8 +34,6 @@
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
                 <li class="nav-item">
                     <a href="<?php echo site_url('admin'); ?>"
                         class="nav-link <?php echo (isset($title) && $title == 'Dashboard Admin' || $title == 'AdHoc Perikanan' || $title == 'Pengadilan Perikanan' || $title == 'Data Usulan' || $title == 'Data Mutasi') ? 'active' : ''; ?>">
@@ -53,7 +51,8 @@
                                 <p>AdHoc Perikanan</p>
                                 <i class="right fas fa-angle-left"></i>
                             </a>
-                            <ul class="nav nav-treeview">
+                            <!-- Tambahkan class sub-sub-menu di sini -->
+                            <ul class="nav nav-treeview sub-sub-menu">
                                 <li class="nav-item">
                                     <a href="<?php echo site_url('admin/adhoc/perikanan'); ?>"
                                         class="nav-link <?php echo (isset($title) && $title == 'AdHoc Perikanan') ? 'active' : ''; ?>">
@@ -62,7 +61,7 @@
                                     </a>
                                 </li>
                             </ul>
-                            <ul class="nav nav-treeview">
+                            <ul class="nav nav-treeview sub-sub-menu">
                                 <li class="nav-item">
                                     <a href="<?php echo site_url('admin/adhoc/perikanan/data_pengadilan'); ?>"
                                         class="nav-link <?php echo (isset($title) && $title == 'Pengadilan Perikanan') ? 'active' : ''; ?>">
@@ -71,7 +70,7 @@
                                     </a>
                                 </li>
                             </ul>
-                            <ul class="nav nav-treeview">
+                            <ul class="nav nav-treeview sub-sub-menu">
                                 <li class="nav-item">
                                     <a href="<?php echo site_url('admin/adhoc/perikanan/data_usulan'); ?>"
                                         class="nav-link <?php echo (isset($title) && $title == 'Data Usulan') ? 'active' : ''; ?>">
@@ -80,7 +79,7 @@
                                     </a>
                                 </li>
                             </ul>
-                            <ul class="nav nav-treeview">
+                            <ul class="nav nav-treeview sub-sub-menu">
                                 <li class="nav-item">
                                     <a href="<?php echo site_url('admin/adhoc/data-mutasi'); ?>"
                                         class="nav-link <?php echo (isset($title) && $title == 'Data Mutasi') ? 'active' : ''; ?>">
@@ -90,6 +89,7 @@
                                 </li>
                             </ul>
                         </li>
+                        <!-- Menu lainnya tetap sama -->
                         <li class="nav-item">
                             <a href="<?php echo site_url('admin'); ?>" class="nav-link">
                                 <i class="far fa-building nav-icon"></i>
@@ -112,7 +112,23 @@
                 </li>
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
 </aside>
+
+<style>
+    /* Tambahkan style untuk sub-sub-menu */
+    .sub-sub-menu {
+        margin-left: 20px !important;
+        padding-left: 10px !important;
+        border-left: 2px solid #4b545c !important;
+    }
+
+    /* Atau alternatif style lainnya */
+    .sub-sub-menu .nav-link {
+        padding-left: 40px !important;
+    }
+
+    .sub-sub-menu .nav-item {
+        margin-bottom: 5px;
+    }
+</style>
