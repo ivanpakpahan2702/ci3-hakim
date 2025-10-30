@@ -13,7 +13,6 @@
 <div class="content-wrapper">
     <!-- Header halaman -->
     <?php $this->load->view('./partials/content-header'); ?>
-
     <!-- Konten utama -->
     <section class="content">
         <div class="container-fluid">
@@ -59,7 +58,7 @@
                                         <option value="6">Satker</option>
                                         <option value="7">TMT Mutas</option>
                                         <option value="8">No Kepres</option>
-                                        <option value="9">Tanggal No Kepres</option>
+                                        <option value="9">Tanggal Kepres</option>
                                         <option value="10">SK Dirjen/KMA</option>
                                         <option value="11">Tanggal SK Dirjen/KMA</option>
                                         <option value="12">Tanggal Pelantikan</option>
@@ -119,7 +118,7 @@
                                         <th>Satker</th>
                                         <th>TMT Mutasi</th>
                                         <th>No Kepres</th>
-                                        <th>Tanggal No Kepres</th>
+                                        <th>Tanggal Kepres</th>
                                         <th>SK Dirjen/KMA</th>
                                         <th>Tanggal SK Dirjen/KMA</th>
                                         <th>Tanggal Pelantikan</th>
